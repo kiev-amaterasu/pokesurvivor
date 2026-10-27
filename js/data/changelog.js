@@ -7,6 +7,8 @@
  */
 G.CHANGELOG = [
   { d: '2026-10-27', title: ["Cooperativo más estable", "Steadier co-op"], new: [
+    ["Nuevo objeto en la Tienda Kecleon: el Olvidamovimientos (1500 monedas, como la Menta). En la ficha del Pokémon, «Olvidar MT» te deja elegir qué movimiento aprendido con MT olvida; sus movimientos propios no se pueden olvidar. No es para siempre: lo puede volver a aprender con su MT y olvidarlo otra vez, y lo olvidado no reaparece al jugar en otro aparato.",
+     "New item in the Kecleon Shop: the Move Deleter (1500 coins, like the Mint). On the Pokémon's card, «Forget TM» lets you choose which TM move it forgets; its own moves cannot be forgotten. It is not forever: it can learn the move again with its TM and forget it again, and a forgotten move does not come back when you play on another device."],
     ["Móvil y tableta: nuevo joystick «Anclado» (Ajustes → Controles → Colocar los botones). Aparece donde pones el dedo y se queda en ese sitio mientras lo mantienes, aunque alejes el dedo; al levantarlo y tocar en otro sitio, aparece allí. El «Flotante» de siempre sigue al dedo y sigue siendo el que viene puesto.",
      "Mobile and tablet: new \"Anchored\" joystick (Settings → Controls → Place the buttons). It appears where you put your finger and stays in that spot while you hold it, even if you move your finger away; lift it and touch somewhere else, and it appears there. The usual \"Floating\" one follows your finger and is still the default."]
   ], fix: [
