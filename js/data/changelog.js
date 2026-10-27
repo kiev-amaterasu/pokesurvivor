@@ -8,7 +8,9 @@
 G.CHANGELOG = [
   { d: '2026-10-27', title: ["Cooperativo más estable", "Steadier co-op"], new: [
     ["Móvil y tableta: nuevo joystick «Anclado» (Ajustes → Controles → Colocar los botones). Aparece donde pones el dedo y se queda en ese sitio mientras lo mantienes, aunque alejes el dedo; al levantarlo y tocar en otro sitio, aparece allí. El «Flotante» de siempre sigue al dedo y sigue siendo el que viene puesto.",
-     "Mobile and tablet: new \"Anchored\" joystick (Settings → Controls → Place the buttons). It appears where you put your finger and stays in that spot while you hold it, even if you move your finger away; lift it and touch somewhere else, and it appears there. The usual \"Floating\" one follows your finger and is still the default."]
+     "Mobile and tablet: new \"Anchored\" joystick (Settings → Controls → Place the buttons). It appears where you put your finger and stays in that spot while you hold it, even if you move your finger away; lift it and touch somewhere else, and it appears there. The usual \"Floating\" one follows your finger and is still the default."],
+    ["Accesibilidad: nuevo ajuste «Avisos de alto contraste» (Ajustes → Accesibilidad → Visión). Las zonas de ataque de los enemigos se ven con borde blanco y negro y rayadas, sin depender del color: pensado para el daltonismo. Viene desactivado.",
+     "Accessibility: new \"High-contrast warnings\" setting (Settings → Accessibility → Vision). Enemy attack zones get a black-and-white border and stripes, so you don't have to rely on color: made for color blindness. It is off by default."]
   ], fix: [
     ["Armadura Frágil, Impasible y Cobardía ya no te quitan las cargas de Agilidad (u otra subida de velocidad mejor) al recibir un golpe: antes las dejaban en una.",
      "Weak Armor, Steadfast and Rattled no longer remove your Agility charges (or any better speed boost) when you get hit: they used to drop them to one."],
@@ -27,7 +29,19 @@ G.CHANGELOG = [
     ["Cooperativo: con algunas redes sólo se podía jugar si hacía de anfitrión una persona concreta; con otro anfitrión, los demás se quedaban «reconectando» todo el rato. Ahora, si la conexión directa no sale, se prueba la conexión por servidor de cualquiera de los dos (no sólo la del anfitrión), y se prepara ya al entrar en la sala para no perder tiempo.",
      "Co-op: on some networks you could only play when one particular person was the host; with someone else hosting, the others kept \"reconnecting\" forever. Now, if the direct connection does not work, the server connection of either player is tried (not just the host's), and it is prepared as soon as you join the room so no time is lost."],
     ["Cooperativo: con una conexión lenta, un jugador podía ver la partida minutos tarde (hasta más de 4 minutos por detrás de los demás), y en la Sentencia de Arceus era un caos. Ahora, si la conexión no da para más, el juego espera a que se ponga al día en vez de amontonar lo que falta por llegar: como mucho, la partida se para un momento («esperando al anfitrión»), pero va siempre al día.",
-     "Co-op: with a slow connection, a player could see the run minutes late (more than 4 minutes behind the others), and Arceus's Judgment turned into chaos. Now, if the connection cannot keep up, the game waits for it to catch up instead of piling up what has yet to arrive: at worst the run pauses for a moment (\"waiting for the host\"), but it is always up to date."]
+     "Co-op: with a slow connection, a player could see the run minutes late (more than 4 minutes behind the others), and Arceus's Judgment turned into chaos. Now, if the connection cannot keep up, the game waits for it to catch up instead of piling up what has yet to arrive: at worst the run pauses for a moment (\"waiting for the host\"), but it is always up to date."],
+    ["Bola Voltio y Bola Neblina tienen por fin su propio dibujo: una esfera eléctrica con chispas que giran y una bruma psíquica en espiral. Ya no se confunden con Impactrueno ni con Confusión.",
+     "Electro Ball and Mist Ball finally have their own look: an electric sphere with spinning sparks and a swirling psychic mist. They no longer get mixed up with Thunder Shock and Confusion."],
+    ["Móvil en horizontal: en la ficha de la Pokédex ya se puede elegir la versión shiny. El selector Normal/Shiny se quedaba aplastado en una raya y no se podía tocar.",
+     "Mobile in landscape: you can now pick the shiny version on the Pokédex page. The Normal/Shiny selector was squashed into a thin line and could not be tapped."],
+    ["Cooperativo: si cambias de Pokémon (o de normal a shiny) estando en una sala, tus compañeros ya te ven con el nuevo. Antes veían el anterior, aunque con tus ataques nuevos.",
+     "Co-op: if you change Pokémon (or switch between normal and shiny) while in a room, your teammates now see the new one. Before, they saw the previous one, though with your new attacks."],
+    ["Grietas: el Pokémon perdido que llevas a su marca ya no desaparece al entrar en una grieta. Te espera fuera y, al volver, sigue a tu lado.",
+     "Rifts: the lost Pokémon you are taking to its mark no longer disappears when you enter a rift. It waits outside and is right next to you when you come back."],
+    ["Móvil: el sonido ya no se satura en los combates con mucho jaleo. Sonaban más efectos a la vez de los que aguanta el móvil y se distorsionaban.",
+     "Mobile: sound no longer distorts in hectic fights. More effects played at once than the phone could handle, and they got distorted."],
+    ["Más fluido con niebla y en la Sentencia de Arceus: en algunos móviles bajaba mucho (hasta 10 fotogramas por segundo con niebla). Se ve igual que antes.",
+     "Smoother in fog and during Arceus's Judgment: on some phones it dropped a lot (down to 10 frames per second in fog). It looks the same as before."]
   ]},
   { d: '2026-10-26', title: ["Halloween se acerca", "Halloween is coming"], new: [
     ["Evento de Halloween del 30 de octubre al 1 de noviembre (hora de España). Lo que trae, lo descubrirás jugando.",
