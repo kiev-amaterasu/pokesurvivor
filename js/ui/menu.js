@@ -551,7 +551,7 @@ G.MenuUI = (() => {
     return { spent, n, levels: lv };
   }
 
-  /** Botón «Mejorar todo»: enseña lo que cuesta subirlo todo al máximo y, antes
+  /** Botón «Mejora total»: enseña lo que cuesta subirlo todo al máximo y, antes
    *  de gastar nada, una ventana con lo que se compra, cuánto cuesta y lo que te queda. */
   function upgradeAllButton() {
     const box = $('upg-all');
@@ -560,8 +560,8 @@ G.MenuUI = (() => {
     const nf = n => n.toLocaleString(G.I18n.locale);
     const all = upgradePlan(upgDex), can = upgradePlan(upgDex, s.coins);
     if (!all.n) { box.innerHTML = `<span class="sub" style="margin:0">${G.T('Todas las mejoras al máximo')}</span>`; return; }
-    box.innerHTML = `<button class="btn small gold" data-sfx="none" ${can.n ? '' : 'disabled'}>
-      ${G.T('Mejorar todo al máximo')}: <span class="coin"></span> ${nf(all.spent)}</button>
+    box.innerHTML = `<button class="btn gold" data-sfx="none" ${can.n ? '' : 'disabled'}>
+      ${G.T('Mejora total')}: <span class="coin"></span> ${nf(all.spent)}</button>
       ${can.n < all.n ? `<span class="sub" style="margin:0">${G.I18n.f('Tienes {x}: te faltan {x}', nf(s.coins), nf(all.spent - s.coins))}</span>` : ''}`;
     box.querySelector('button').onclick = () => {
       const sv = G.DB.save, before = G.DB.upgradesOf(upgDex);
@@ -574,7 +574,7 @@ G.MenuUI = (() => {
       el.className = 'scr dim';
       el.style.zIndex = 70;
       el.innerHTML = `<div class="box" style="max-width:420px">
-        <h3>${G.T('Mejorar todo')}</h3>
+        <h3>${G.T('Mejora total')}</h3>
         <p class="sub">${whole
           ? G.I18n.f('Se suben al máximo todas las mejoras de {x}: {x} niveles por {x} monedas.', mon.name, plan.n, nf(plan.spent))
           : G.I18n.f('Para subir todas las mejoras de {x} al máximo hacen falta {x} monedas y tienes {x}. Con lo que tienes se compran {x} niveles, empezando por los más baratos, por {x} monedas:', mon.name, nf(full.spent), nf(sv.coins), plan.n, nf(plan.spent))}</p>

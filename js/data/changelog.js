@@ -7,8 +7,8 @@
  */
 G.CHANGELOG = [
   { d: '2026-10-27', title: ["Cooperativo más estable", "Steadier co-op"], new: [
-    ["Mejoras: botón «Mejorar todo al máximo», con lo que cuesta subir todas las mejoras de ese Pokémon. Antes de gastar nada te enseña qué niveles se compran, cuánto cuesta y con cuántas monedas te quedas. Si no te llega para todo, compra lo que puedas empezando por lo más barato.",
-     "Upgrades: a «Max out everything» button that shows what it costs to max all of that Pokémon's upgrades. Before spending anything it shows which levels you buy, what it costs and how many coins you will have left. If you cannot afford everything, it buys what it can, cheapest first."],
+    ["Mejoras: botón «Mejora total», con lo que cuesta subir todas las mejoras de ese Pokémon. Antes de gastar nada te enseña qué niveles se compran, cuánto cuesta y con cuántas monedas te quedas. Si no te llega para todo, compra lo que puedas empezando por lo más barato.",
+     "Upgrades: a «Full upgrade» button that shows what it costs to max all of that Pokémon's upgrades. Before spending anything it shows which levels you buy, what it costs and how many coins you will have left. If you cannot afford everything, it buys what it can, cheapest first."],
     ["Móvil y tableta: nuevo joystick «Anclado» (Ajustes → Controles → Colocar los botones). Aparece donde pones el dedo y se queda en ese sitio mientras lo mantienes, aunque alejes el dedo; al levantarlo y tocar en otro sitio, aparece allí. El «Flotante» de siempre sigue al dedo y sigue siendo el que viene puesto.",
      "Mobile and tablet: new \"Anchored\" joystick (Settings → Controls → Place the buttons). It appears where you put your finger and stays in that spot while you hold it, even if you move your finger away; lift it and touch somewhere else, and it appears there. The usual \"Floating\" one follows your finger and is still the default."]
   ], chg: [
