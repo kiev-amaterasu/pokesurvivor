@@ -26,7 +26,7 @@ G.Shop = (() => {
     candy: { name: 'Caramelo de Halloween', icon: 'candy', price: 0, event: true,
              desc: 'Lo sueltan los Pokémon Fantasma y las calabazas en Halloween. Con ellos se compran las skins de bruja en la Tienda Kecleon.' }
   };
-  const ORDER = ['mint', 'cap', 'caph', 'forget'];
+  const ORDER = ['forget', 'mint', 'cap', 'caph'];
   const DAILY = 8;
 
   const save = () => G.DB.save;
