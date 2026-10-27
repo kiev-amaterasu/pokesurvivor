@@ -73,14 +73,64 @@ G.Hazards = (() => {
     }
   }
 
+  // Alto contraste (Ajustes → Accesibilidad, para daltónicos): un rayado
+  // diagonal negro y blanco, el mismo para todos (se hace una vez).
+  let hatch = null;
+  function hatchPattern(ctx) {
+    if (hatch) return hatch;
+    const c = document.createElement('canvas');
+    c.width = c.height = 16;
+    const g = c.getContext('2d');
+    g.lineCap = 'square';
+    const diag = (off, col, w) => {
+      g.strokeStyle = col; g.lineWidth = w;
+      for (const d of [-16, 0, 16]) { g.beginPath(); g.moveTo(d + off, 16); g.lineTo(d + off + 16, 0); g.stroke(); }
+    };
+    diag(0, 'rgba(0,0,0,0.6)', 3.5);
+    diag(8, 'rgba(255,255,255,0.35)', 2);
+    hatch = ctx.createPattern(c, 'repeat');
+    return hatch;
+  }
+
+  /** Aviso de alto contraste: relleno más opaco y rayado, y borde doble
+   *  (negro grueso debajo, blanco encima; amarillo al parpadear). */
+  function drawHi(ctx, h, k, blink, shape) {
+    const end = k > 0.75 && blink;
+    ctx.fillStyle = h.color;
+    ctx.globalAlpha = end ? 0.5 : 0.32;
+    shape(1); ctx.fill();
+    ctx.globalAlpha = 0.45;
+    shape(k); ctx.fill();
+    ctx.globalAlpha = end ? 0.9 : 0.65;
+    ctx.fillStyle = hatchPattern(ctx);
+    shape(1); ctx.fill();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 0.9;
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 6;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = end ? '#ffe600' : '#ffffff'; ctx.lineWidth = 3;
+    ctx.setLineDash([16, 6]);
+    ctx.stroke();
+  }
+
   /** Avisos en el suelo (debajo de los Pokémon). */
   function draw(ctx) {
     const blink = Math.sin(performance.now() / 60) > 0;
+    const hi = G.Settings.get('hiContrast');
     for (const h of list) {
       if (h.hit) continue;
       const k = Math.min(1, h.t / h.delay);
       ctx.save();
-      if (h.kind === 'zone') {
+      if (hi) {
+        if (h.kind === 'zone') {
+          drawHi(ctx, h, k, blink, s => { ctx.beginPath(); ctx.ellipse(h.x, h.y, h.r * s, h.r * 0.75 * s, 0, 0, 6.2832); });
+        } else {
+          ctx.translate(h.x, h.y);
+          ctx.rotate(h.angle);
+          drawHi(ctx, h, k, blink, s => { ctx.beginPath(); ctx.rect(0, -h.w / 2 * s, h.len, h.w * s); });
+        }
+      } else if (h.kind === 'zone') {
         ctx.globalAlpha = 0.16;
         ctx.fillStyle = h.color;
         ctx.beginPath(); ctx.ellipse(h.x, h.y, h.r, h.r * 0.75, 0, 0, 6.2832); ctx.fill();
