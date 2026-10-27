@@ -73,44 +73,43 @@ G.Hazards = (() => {
     }
   }
 
-  // Alto contraste (Ajustes → Accesibilidad, para daltónicos): un rayado
-  // diagonal negro y blanco, el mismo para todos (se hace una vez).
+  // Franjas diagonales oscuro-claro, las mismas para todos (se hacen una vez).
   let hatch = null;
   function hatchPattern(ctx) {
     if (hatch) return hatch;
     const c = document.createElement('canvas');
     c.width = c.height = 16;
     const g = c.getContext('2d');
-    g.lineCap = 'square';
-    const diag = (off, col, w) => {
-      g.strokeStyle = col; g.lineWidth = w;
+    g.lineCap = 'square'; g.lineWidth = 4;
+    const diag = (off, col) => {
+      g.strokeStyle = col;
       for (const d of [-16, 0, 16]) { g.beginPath(); g.moveTo(d + off, 16); g.lineTo(d + off + 16, 0); g.stroke(); }
     };
-    diag(0, 'rgba(0,0,0,0.6)', 3.5);
-    diag(8, 'rgba(255,255,255,0.35)', 2);
+    diag(0, '#000');
+    diag(8, '#fff');
     hatch = ctx.createPattern(c, 'repeat');
     return hatch;
   }
 
-  /** Aviso de alto contraste: relleno más opaco y rayado, y borde doble
-   *  (negro grueso debajo, blanco encima; amarillo al parpadear). */
+  /** Aviso de alto contraste (Ajustes → Accesibilidad, para daltónicos):
+   *  el relleno casi como siempre con franjas oscuro-claro tenues, y un borde
+   *  claro continuo con una sombra fina debajo, que se ve en cualquier suelo
+   *  sin depender del color (amarillo al parpadear, justo antes del golpe). */
   function drawHi(ctx, h, k, blink, shape) {
     const end = k > 0.75 && blink;
     ctx.fillStyle = h.color;
-    ctx.globalAlpha = end ? 0.5 : 0.32;
+    ctx.globalAlpha = 0.2;
     shape(1); ctx.fill();
-    ctx.globalAlpha = 0.45;
+    ctx.globalAlpha = 0.36;
     shape(k); ctx.fill();
-    ctx.globalAlpha = end ? 0.9 : 0.65;
+    ctx.globalAlpha = 0.16;
     ctx.fillStyle = hatchPattern(ctx);
     shape(1); ctx.fill();
-    ctx.setLineDash([]);
-    ctx.globalAlpha = 0.9;
-    ctx.strokeStyle = '#000'; ctx.lineWidth = 6;
+    ctx.globalAlpha = 0.45;
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 4;
     ctx.stroke();
-    ctx.globalAlpha = 1;
-    ctx.strokeStyle = end ? '#ffe600' : '#ffffff'; ctx.lineWidth = 3;
-    ctx.setLineDash([16, 6]);
+    ctx.globalAlpha = end ? 1 : 0.85;
+    ctx.strokeStyle = end ? '#ffe600' : '#ffffff'; ctx.lineWidth = 2;
     ctx.stroke();
   }
 
