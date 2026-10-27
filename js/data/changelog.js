@@ -12,6 +12,8 @@ G.CHANGELOG = [
     ["Móvil y tableta: nuevo joystick «Anclado» (Ajustes → Controles → Colocar los botones). Aparece donde pones el dedo y se queda en ese sitio mientras lo mantienes, aunque alejes el dedo; al levantarlo y tocar en otro sitio, aparece allí. El «Flotante» de siempre sigue al dedo y sigue siendo el que viene puesto.",
      "Mobile and tablet: new \"Anchored\" joystick (Settings → Controls → Place the buttons). It appears where you put your finger and stays in that spot while you hold it, even if you move your finger away; lift it and touch somewhere else, and it appears there. The usual \"Floating\" one follows your finger and is still the default."]
   ], fix: [
+    ["La Mochila ya no se mete debajo de la barra de arriba: empieza más abajo, como la Tienda Kecleon y las demás ventanas.",
+     "The Bag no longer slips under the top bar: it now starts lower, like the Kecleon Shop and the other windows."],
     ["Armadura Frágil, Impasible y Cobardía ya no te quitan las cargas de Agilidad (u otra subida de velocidad mejor) al recibir un golpe: antes las dejaban en una.",
      "Weak Armor, Steadfast and Rattled no longer remove your Agility charges (or any better speed boost) when you get hit: they used to drop them to one."],
     ["El Chaleco Asalto ya no cuenta para el tope del 70 % de las cartas Coraza: con las cartas al máximo, el chaleco suma encima. Y si te lo quitas, no pierdes lo de las cartas.",

@@ -65,7 +65,7 @@ input { font: inherit; }
 body.touch #scr-levelup, body.touch #scr-bond, body.touch #scr-item { touch-action: none; }
 /* Pantallas que se abren con la barra superior a la vista: empiezan debajo de ella. */
 @media (min-height: 521px) {
-  #scr-goals, #scr-dex, #scr-upgrades, #scr-gacha, #scr-friends, #scr-rank, #scr-lobby, #scr-profile, #scr-shop, #scr-news { padding-top: 66px; }
+  #scr-goals, #scr-dex, #scr-upgrades, #scr-gacha, #scr-friends, #scr-rank, #scr-lobby, #scr-profile, #scr-shop, #scr-bag, #scr-news { padding-top: 66px; }
 }
 .scr.dim { background: radial-gradient(circle at 50% 40%, rgba(10,20,50,.55), rgba(3,6,16,.88)); }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
@@ -1041,7 +1041,7 @@ html:lang(zh) .btn, html:lang(zh) .chip { letter-spacing: 0; }
   #btn-support span { display: none; }
   .sound-panel { top: 82px; }
   .menu-left { padding-top: 92px; }
-  #scr-goals, #scr-dex, #scr-upgrades, #scr-gacha, #scr-friends, #scr-rank, #scr-lobby, #scr-profile, #scr-shop, #scr-news { padding-top: 92px; }
+  #scr-goals, #scr-dex, #scr-upgrades, #scr-gacha, #scr-friends, #scr-rank, #scr-lobby, #scr-profile, #scr-shop, #scr-bag, #scr-news { padding-top: 92px; }
 }
 
 /* ============ barra de arriba: limpia en cualquier pantalla (26-10-2026) ============
