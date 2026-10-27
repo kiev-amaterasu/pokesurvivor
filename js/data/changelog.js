@@ -7,8 +7,15 @@
  */
 G.CHANGELOG = [
   { d: '2026-10-27', title: ["Cooperativo más estable", "Steadier co-op"], new: [
+    ["Mejoras: botón «Mejorar todo al máximo», con lo que cuesta subir todas las mejoras de ese Pokémon. Antes de gastar nada te enseña qué niveles se compran, cuánto cuesta y con cuántas monedas te quedas. Si no te llega para todo, compra lo que puedas empezando por lo más barato.",
+     "Upgrades: a «Max out everything» button that shows what it costs to max all of that Pokémon's upgrades. Before spending anything it shows which levels you buy, what it costs and how many coins you will have left. If you cannot afford everything, it buys what it can, cheapest first."],
     ["Móvil y tableta: nuevo joystick «Anclado» (Ajustes → Controles → Colocar los botones). Aparece donde pones el dedo y se queda en ese sitio mientras lo mantienes, aunque alejes el dedo; al levantarlo y tocar en otro sitio, aparece allí. El «Flotante» de siempre sigue al dedo y sigue siendo el que viene puesto.",
      "Mobile and tablet: new \"Anchored\" joystick (Settings → Controls → Place the buttons). It appears where you put your finger and stays in that spot while you hold it, even if you move your finger away; lift it and touch somewhere else, and it appears there. The usual \"Floating\" one follows your finger and is still the default."]
+  ], chg: [
+    ["Avisos de shiny más visibles: salen más grandes, en azul shiny, sobre un recuadro con destellos y durante más tiempo. Y ningún otro aviso los tapa: antes, con mucho jaleo en pantalla, el del shiny se pisaba y no te enterabas de que había aparecido ni de que lo habías conseguido.",
+     "Shiny alerts are easier to see: bigger, in shiny blue, on a sparkling box and for longer. And no other alert covers them: before, with a lot going on, the shiny alert got overwritten and you did not notice that one had appeared or that you had caught it."],
+    ["Al volver de una grieta tienes 1 segundo sin recibir daño y los enemigos que esperaban justo donde entraste se apartan un poco. Antes caías en medio de la horda y te comías los golpes sin poder hacer nada.",
+     "When you come back from a rift you get 1 second without taking damage, and the enemies waiting right where you went in are pushed back a little. Before, you landed in the middle of the horde and took hits you could do nothing about."]
   ], fix: [
     ["Armadura Frágil, Impasible y Cobardía ya no te quitan las cargas de Agilidad (u otra subida de velocidad mejor) al recibir un golpe: antes las dejaban en una.",
      "Weak Armor, Steadfast and Rattled no longer remove your Agility charges (or any better speed boost) when you get hit: they used to drop them to one."],

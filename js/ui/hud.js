@@ -46,6 +46,17 @@ G.HUD = (() => {
     ctx.restore();
   }
 
+  /** Destello de cuatro puntas (el de los shinies). */
+  function sparkle(ctx, x, y, r, col) {
+    ctx.beginPath();
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4, d = i % 2 ? r * 0.28 : r;
+      ctx[i ? 'lineTo' : 'moveTo'](x + Math.cos(a - Math.PI / 2) * d, y + Math.sin(a - Math.PI / 2) * d);
+    }
+    ctx.closePath();
+    ctx.fillStyle = col; ctx.fill();
+  }
+
   function roundRect(ctx, x, y, w, h, r) {
     ctx.beginPath();
     ctx.moveTo(x + r, y);
@@ -279,17 +290,29 @@ G.HUD = (() => {
       ctx.textAlign = 'center';
       // En el móvil las frases largas (las esferas) se salían por los dos lados:
       // se parten en líneas y, si aún no caben en tres, la letra baja.
-      let size = 22, lines;
+      // El de un shiny, más grande, en azul shiny y sobre un recuadro con
+      // destellos: entre tantos ataques, el texto suelto no se veía.
+      const sh = ban.shiny;
+      let size = sh ? 26 : 22, lines;
       for (;;) {
         ctx.font = F(800, size);
-        lines = wrap(ctx, ban.text, w - 40);
+        lines = wrap(ctx, ban.text, w - (sh ? 96 : 40));
         if (lines.length <= 3 || size <= 14) break;
         size -= 2;
       }
-      ctx.fillStyle = '#ffcb3d';
-      ctx.strokeStyle = 'rgba(0,0,0,.7)'; ctx.lineWidth = 4;
       // (Nunca por encima de la línea de bioma, derrotados y monedas, bajo el reloj.)
-      const y0 = Math.max(78 + size * 0.5, h * 0.3 - (lines.length - 1) / 2 * size * 1.25);
+      const y0 = Math.max(78 + size * 0.5 + (sh ? 10 : 0), h * 0.3 - (lines.length - 1) / 2 * size * 1.25);
+      if (sh) {
+        const tw = Math.max(...lines.map(ln => ctx.measureText(ln).width));
+        const bw = tw + 76, bh = (lines.length - 1) * size * 1.25 + size + 22, by = y0 - size * 0.85 - 9;
+        const glow = 0.55 + Math.sin(performance.now() / 140) * 0.45;
+        roundRect(ctx, w / 2 - bw / 2, by, bw, bh, 12);
+        ctx.fillStyle = 'rgba(6,22,38,.78)'; ctx.fill();
+        ctx.lineWidth = 3; ctx.strokeStyle = `rgba(154,230,255,${0.45 + glow * 0.55})`; ctx.stroke();
+        for (const sx of [-1, 1]) sparkle(ctx, w / 2 + sx * (bw / 2 - 20), by + bh / 2, 7 + glow * 4, '#e6fbff');
+      }
+      ctx.fillStyle = sh ? '#bff3ff' : '#ffcb3d';
+      ctx.strokeStyle = 'rgba(0,0,0,.7)'; ctx.lineWidth = 4;
       lines.forEach((ln, i) => {
         const y = y0 + i * size * 1.25;
         ctx.strokeText(ln, w / 2, y);
