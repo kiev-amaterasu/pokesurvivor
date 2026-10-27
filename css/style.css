@@ -343,6 +343,12 @@ label { display: block; font-size: 14px; color: var(--muted); margin: 8px 0 4px;
 
 /* ---------- mejoras ---------- */
 .upg { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+/* Los objetos de Kecleon, los cuatro en una fila: el precio va debajo del texto. */
+.upg.upg-4 { grid-template-columns: repeat(4, 1fr); }
+.upg-4 .upg-item { grid-template-columns: 34px 1fr; grid-template-rows: 1fr auto; align-items: start; }
+.upg-4 .upg-btns { grid-column: 1 / -1; align-self: end; }
+@media (max-width: 900px) { .upg.upg-4 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .upg.upg-4 { grid-template-columns: 1fr; } }
 .upg-item { display: grid; grid-template-columns: 40px 1fr auto; gap: 10px; align-items: center; }
 .upg-item .ic { font-size: 26px; text-align: center; }
 .pips { display: flex; gap: 3px; margin-top: 4px; }

@@ -21,7 +21,7 @@ G.Shop = (() => {
     // Como el Quitamovimientos de los juegos: borra un movimiento aprendido con MT (nunca
     // los propios del Pokémon). Se puede volver a aprender con otra MT, y olvidar otra vez.
     forget: { name: 'Olvidamovimientos', icon: 'forget', price: 1500,
-              desc: 'Hace que un Pokémon olvide un movimiento que aprendió con MT. Sus movimientos propios no se pueden olvidar, y el olvidado se puede volver a aprender con otra MT.' },
+              desc: 'Un Pokémon olvida un movimiento aprendido con MT (los suyos propios, no). Podrá volver a aprenderlo.' },
     // Halloween (25-10-2026): no se vende; se consigue jugando esos días y se gasta en las skins.
     candy: { name: 'Caramelo de Halloween', icon: 'candy', price: 0, event: true,
              desc: 'Lo sueltan los Pokémon Fantasma y las calabazas en Halloween. Con ellos se compran las skins de bruja en la Tienda Kecleon.' }

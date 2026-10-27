@@ -566,7 +566,7 @@ G.ShopUI = (() => {
     const s = G.DB.save, partner = s.partner, mine = n => (n ? ` <small class="gold">· ${G.I18n.f('tienes {x}', n)}</small>` : '');
     const buyBtn = (key, price) => `<button class="btn small gold" data-buy="${key}" data-sfx="none" ${s.coins < price ? 'disabled' : ''}>${coin(price)}</button>`;
     let h = G.Halloween.on ? skinsHtml() : '';
-    h += `<h3 style="margin:10px 0 6px">${G.T('Objetos')}</h3><div class="upg">`;
+    h += `<h3 style="margin:10px 0 6px">${G.T('Objetos')}</h3><div class="upg upg-4">`;
     for (const id of G.Shop.ORDER) {
       const it = G.Shop.ITEMS[id];
       h += row(G.Icons.html(it.icon, 32), G.T(it.name) + mine(G.Shop.count(id)), G.T(it.desc), buyBtn(id, it.price));

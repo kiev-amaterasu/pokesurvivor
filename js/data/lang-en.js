@@ -1116,7 +1116,7 @@ G.I18n.add({
   "Test inicial: los rasgos de tu personalidad («Paciente», «Tenaz»…) salían en español en todos los idiomas. Ya salen traducidos.": "Starting quiz: your personality traits (\"Patient\", \"Tenacious\"…) were shown in Spanish in every language. They are translated now.",
   "Ranking de daño a Arceus: «Sólo amigos» enseña también a los amigos que no están en el top 50 (en Histórico); en el Histórico se guarda tu mejor daño aunque esa partida no mejore tu tiempo; y si una partida no puede entrar en el ranking, ahora te lo dice.": "Arceus damage leaderboard: \"Friends only\" also shows friends outside the top 50 (in All-time); All-time keeps your best damage even if that run does not beat your time; and if a run cannot enter the leaderboard, it now tells you.",
   "Olvidamovimientos": "Move Deleter",
-  "Hace que un Pokémon olvide un movimiento que aprendió con MT. Sus movimientos propios no se pueden olvidar, y el olvidado se puede volver a aprender con otra MT.": "Makes a Pokémon forget a move it learned from a TM. Its own moves cannot be forgotten, and the forgotten move can be learned again with another TM.",
+  "Un Pokémon olvida un movimiento aprendido con MT (los suyos propios, no). Podrá volver a aprenderlo.": "A Pokémon forgets a move learned from a TM (not its own moves). It can learn it again later.",
   "Olvidar MT": "Forget TM",
   "{x} ha olvidado {x}. Puede volver a aprenderlo con su MT.": "{x} forgot {x}. It can learn it again with its TM.",
   "¿Qué movimiento aprendido con MT olvida? Se gasta un Olvidamovimientos. Sus movimientos propios no se pueden olvidar.": "Which TM move should it forget? This uses one Move Deleter. Its own moves cannot be forgotten.",
