@@ -17,17 +17,14 @@ G.HUD = (() => {
 
   /** Cartel encima de una esfera: su nombre y, con el ratón encima, también lo que hace. */
   function orbTip(ctx, id, cx, by, full, w) {
-    const o = G.Orbs.BY[id], name = G.T(o.name);
-    const lines = [];
-    if (full) {
-      ctx.font = F(600, 11);
-      let cur = '';
-      for (const word of G.T(o.desc).split(' ')) {
-        const t = cur ? cur + ' ' + word : word;
-        if (ctx.measureText(t).width > 240 && cur) { lines.push(cur); cur = word; } else cur = t;
-      }
-      if (cur) lines.push(cur);
-    }
+    const o = G.Orbs.BY[id];
+    tipBox(ctx, G.T(o.name), full ? G.T(o.desc) : '', o.col, cx, by, w);
+  }
+
+  /** Cartelito centrado en cx y apoyado en by: un título y, si lo hay, un texto debajo (partido en líneas). */
+  function tipBox(ctx, name, desc, col, cx, by, w) {
+    ctx.font = F(600, 11);
+    const lines = desc ? wrap(ctx, desc, 240) : [];
     ctx.font = F(800, 12);
     let bw = ctx.measureText(name).width;
     ctx.font = F(600, 11);
@@ -37,13 +34,47 @@ G.HUD = (() => {
     ctx.save();
     roundRect(ctx, bx, y, bw, bh, 8);
     ctx.fillStyle = 'rgba(10,14,28,.92)'; ctx.fill();
-    ctx.lineWidth = 1.5; ctx.strokeStyle = o.col; ctx.stroke();
+    ctx.lineWidth = 1.5; ctx.strokeStyle = col; ctx.stroke();
     ctx.textAlign = 'center';
-    ctx.font = F(800, 12); ctx.fillStyle = o.col;
+    ctx.font = F(800, 12); ctx.fillStyle = col;
     ctx.fillText(name, bx + bw / 2, y + 14);
     ctx.font = F(600, 11); ctx.fillStyle = '#e6ecff';
     lines.forEach((l, k) => ctx.fillText(l, bx + bw / 2, y + 28 + k * 14));
     ctx.restore();
+  }
+
+  /** Las cartas de mejora que llevas en la partida (sin la Baya Zidra, que se gasta al cogerla). */
+  function cardList(pl) {
+    const taken = pl.statsTaken || {};
+    return G.LevelUp.STATS.filter(s => s.id !== 'heal' && taken[s.id] > 0)
+      .map(s => ({ s, n: taken[s.id], full: !!s.max && taken[s.id] >= s.max }));
+  }
+
+  /**
+   * Bioma, derrotados y monedas (y caramelos en Halloween) en una línea. Los
+   * números van con su icono, así no hay que decir "1 monedas". Devuelve el
+   * ancho; con x === null sólo mide.
+   */
+  function runInfo(ctx, pl, x, y, align, size) {
+    const IS = Math.round(size * 1.5), GAP = Math.round(size * 0.9);
+    const nums = [['ball', pl.kills], ['coin', pl.coins]];
+    if (G.Halloween.inRun) nums.push(['candy', pl.candy || 0]);
+    ctx.font = F(800, size);
+    const parts = [];
+    if (G.World.biomeName) parts.push({ text: G.World.biomeName().toUpperCase(), col: '#c9d6ee' });
+    for (const [icon, v] of nums) parts.push({ icon }, { text: Number(v).toLocaleString(G.I18n.locale), col: '#f4f8ff' });
+    const widthOf = q => q.icon ? IS + 4 : ctx.measureText(q.text).width;
+    const total = parts.reduce((a, q, i) => a + widthOf(q) + (i && !parts[i - 1].icon ? GAP : 0), 0);
+    if (x === null) return total;
+    let cx = align === 'center' ? x - total / 2 : align === 'right' ? x - total : x;
+    ctx.textAlign = 'left';
+    parts.forEach((q, i) => {
+      if (i && !parts[i - 1].icon) cx += GAP;
+      if (q.icon) G.Icons.draw(ctx, q.icon, cx, y - IS + Math.round(size * 0.2), IS);
+      else { ctx.fillStyle = q.col; ctx.fillText(q.text, cx, y); }
+      cx += widthOf(q);
+    });
+    return total;
   }
 
   function roundRect(ctx, x, y, w, h, r) {
@@ -123,11 +154,9 @@ G.HUD = (() => {
     ctx.font = F(800, 26);
     ctx.fillStyle = 'rgba(255,255,255,.95)';
     ctx.fillText(G.U.mmss(st.time), w / 2, 42);
-    ctx.font = F(600, 10);
-    ctx.fillStyle = '#8fa3c4';
-    // Halloween: también los caramelos que llevas en esta partida.
-    const cn = G.Halloween.inRun ? '  ·  ' + (pl.candy || 0) + ' CARAMELOS' : '';
-    ctx.fillText(G.World.biomeName().toUpperCase() + '  ·  ' + pl.kills + ' DERROTADOS  ·  ' + pl.coins + ' MONEDAS' + cn, w / 2, 58);
+    // En el móvil, bioma, derrotados y monedas siguen debajo del reloj (abajo
+    // estorbaría al dedo); en el ordenador van a la derecha de los ataques.
+    if (touch) runInfo(ctx, pl, w / 2, 58, 'center', 10);
 
     // ---------- clima (arriba a la derecha) ----------
     const wx = G.Weather.current;
@@ -147,11 +176,15 @@ G.HUD = (() => {
     // ---------- barra del jefe ----------
     const boss = G.EnemyMgr.all().find(e => e.boss && !e.dead);
     if (boss) {
-      const bw = Math.min(420, w - 80);
-      bar(ctx, (w - bw) / 2, 70, bw, 12, boss.hp / boss.maxHp, '#ffcb3d');
-      ctx.font = F(800, 10);
-      ctx.fillStyle = '#20160a';
-      ctx.fillText(boss.name.toUpperCase(), w / 2, 80);
+      // Más gruesa y con el nombre en blanco con borde: antes era letra de 10 px oscura dentro de la barra.
+      const bw = Math.min(520, w - 80);
+      bar(ctx, (w - bw) / 2, 68, bw, 18, boss.hp / boss.maxHp, '#ffcb3d');
+      ctx.font = F(800, 14);
+      ctx.textAlign = 'center';
+      ctx.lineJoin = 'round'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(20,14,4,.9)';
+      ctx.strokeText(boss.name.toUpperCase(), w / 2, 82);
+      ctx.fillStyle = '#fff';
+      ctx.fillText(boss.name.toUpperCase(), w / 2, 82);
     }
 
     // ---------- aviso ----------
@@ -188,6 +221,21 @@ G.HUD = (() => {
       ctx.fillStyle = pw.def.color;
       ctx.fillText(txt, bx + 6, py + 45);
       bx += tw + 5;
+    }
+
+    // Móvil: las cartas de mejora, en pequeño, en la fila de los buffs (abajo estorbarían al dedo).
+    if (touch) {
+      for (const c of cardList(pl)) {
+        ctx.font = F(800, 9);
+        ctx.textAlign = 'left';
+        const txt = '×' + c.n, tw = 14 + 3 + ctx.measureText(txt).width + 10;
+        roundRect(ctx, bx, py + 34, tw, 15, 7);
+        ctx.fillStyle = 'rgba(0,0,0,.5)'; ctx.fill();
+        G.Icons.draw(ctx, c.s.icon, bx + 4, py + 34.5, 14);
+        ctx.fillStyle = c.full ? '#ffd23f' : '#eaf2ff';
+        ctx.fillText(txt, bx + 21, py + 45);
+        bx += tw + 5;
+      }
     }
 
     if (G.Coop.active) drawCoop(ctx, w, h, pl, px, py + (bx > px ? 56 : 40));
@@ -244,7 +292,7 @@ G.HUD = (() => {
       ctx.textAlign = 'center';
       ctx.font = F(800, 12);
       ctx.fillStyle = '#d9c2ff';
-      ctx.fillText('GRIETA · ' + G.U.mmss(G.Rift.timeLeft), w / 2, boss ? 98 : 76);
+      ctx.fillText('GRIETA · ' + G.U.mmss(G.Rift.timeLeft), w / 2, boss ? 104 : 76);
     }
 
     // Eventos: cuenta atrás, flecha al Pokémon perdido / a la marca y a los duendes.
@@ -419,6 +467,58 @@ G.HUD = (() => {
         ctx.fillStyle = '#ffd23f';
         ctx.fillText(G.Items.BY[pl.item].name, ix + S / 2, iy - 6);
       }
+
+      // ---------- ordenador: cartas de mejora a la izquierda del objeto ----------
+      // (Antes sólo se veían en la pausa.) Icono y ×N; con el ratón encima, qué hace.
+      // Si no caben en una fila, suben en otra.
+      const cards = touch ? [] : cardList(pl);
+      if (cards.length) {
+        const CH = 28, CG = 6, right = ix - 14, left = 12 + sa.left;
+        const mo = G.Input.mouse();
+        ctx.font = F(800, 13);
+        const wOf = c => 6 + 20 + 4 + ctx.measureText('×' + c.n).width + 8;
+        const rows = [[]];
+        let used = 0;
+        for (const c of cards) {
+          const cw = wOf(c);
+          if (used && right - used - cw < left) { rows.push([]); used = 0; }
+          rows[rows.length - 1].push(c);
+          used += cw + CG;
+        }
+        let tip = null;
+        const y0 = rows.length > 1 ? iy + S - CH : iy + (S - CH) / 2;
+        rows.forEach((row, r) => {
+          // En el orden de las cartas, de izquierda a derecha, pegadas al objeto.
+          let x = right - row.reduce((a, c) => a + wOf(c) + CG, -CG);
+          const y = y0 - r * (CH + CG);
+          for (const c of row) {
+            const cw = wOf(c);
+            roundRect(ctx, x, y, cw, CH, 9);
+            ctx.fillStyle = 'rgba(10,16,28,.8)'; ctx.fill();
+            ctx.lineWidth = 1.2;
+            ctx.strokeStyle = c.full ? '#ffd23f' : 'rgba(140,170,210,.3)';
+            ctx.stroke();
+            G.Icons.draw(ctx, c.s.icon, x + 6, y + (CH - 20) / 2, 20);
+            ctx.font = F(800, 13);
+            ctx.textAlign = 'left';
+            ctx.fillStyle = c.full ? '#ffd23f' : '#f4f8ff';
+            ctx.fillText('×' + c.n, x + 30, y + CH / 2 + 5);
+            if (mo.x >= x && mo.x <= x + cw && mo.y >= y && mo.y <= y + CH) tip = { c, cx: x + cw / 2, y };
+            x += cw + CG;
+          }
+        });
+        if (tip) tipBox(ctx, tip.c.s.title, tip.c.s.desc, tip.c.full ? '#ffd23f' : '#9fc4ff', tip.cx, tip.y - 6, w);
+      }
+    }
+
+    // ---------- ordenador: bioma, derrotados y monedas a la derecha de los ataques ----------
+    if (!touch) {
+      const ix = sx + totalW + 16 + (pl.bonds > 1 ? 54 : pl.bonds > 0 ? 34 : 0);
+      const tw = runInfo(ctx, pl, null, 0, 'left', 13);
+      roundRect(ctx, ix, sy + (S - 34) / 2, tw + 20, 34, 9);
+      ctx.fillStyle = 'rgba(10,16,28,.72)'; ctx.fill();
+      ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(140,170,210,.22)'; ctx.stroke();
+      runInfo(ctx, pl, ix + 10, sy + S / 2 + 5, 'left', 13);
     }
 
     // ---------- esferas (encima de los ataques; teclas 5-8) y sus mejoras activas ----------

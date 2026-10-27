@@ -80,6 +80,7 @@ G.MenuUI = (() => {
     socialLine();
     // Premios de misiones por recoger.
     G.Progress.checkAch();
+    G.GoalsUI.mini($('menu-goals'));
     const pend = G.Progress.pending();
     $('menu-goals-sub').textContent = pend ? pend + (pend === 1 ? ' premio por recoger' : ' premios por recoger') : 'Misiones, logros y perfil';
     $('menu-goals-sub').classList.toggle('gold', pend > 0);
