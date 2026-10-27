@@ -77,8 +77,8 @@
   ]
 }
 </script>
-<link rel="stylesheet" href="css/style.css?v=fd07d5accc">
-<script src="js/core/locales.js?v=602463cd19"></script>
+<link rel="stylesheet" href="css/style.css?v=d2e67cef69">
+<script src="js/core/locales.js?v=9d47e93adc"></script>
 <script src="js/noframe.js"></script>
 </head>
 <body>
@@ -346,7 +346,7 @@
     <p class="sub">Es el nombre que verán tus amigos y el que sale en el ranking.
       Tu nombre y tu correo de Google no se enseñan a nadie.</p>
     <form id="nick-form" autocomplete="off">
-      <input id="nick-in" class="field" maxlength="16" spellcheck="false" placeholder="3-16 letras, números o _">
+      <input id="nick-in" class="field" maxlength="16" spellcheck="false" autocapitalize="none" autocorrect="off" placeholder="3-16 letras, números o _">
       <p id="nick-err" class="err"></p>
       <div class="row"><button id="nick-ok" class="btn gold grow" type="submit">Guardar apodo</button></div>
     </form>
@@ -361,7 +361,7 @@
       <div class="row"><button id="fr-room" class="btn small gold hidden">Ir a la sala</button><button class="btn small ghost" data-back>Volver</button></div></div>
     <p class="sub" id="fr-me"></p>
     <form id="fr-add" class="row" autocomplete="off">
-      <input id="fr-name" class="field grow" maxlength="16" spellcheck="false" placeholder="Apodo de tu amigo">
+      <input id="fr-name" class="field grow" maxlength="16" spellcheck="false" autocapitalize="none" autocorrect="off" placeholder="Apodo de tu amigo">
       <button class="btn gold" type="submit" data-sfx="confirm">Añadir amigo</button>
     </form>
     <p id="fr-msg" class="note"></p>
@@ -604,6 +604,6 @@
 </section>
 
 <!-- datos generados -->
-<script defer src="js/app.min.js?v=411411a9da"></script>
+<script defer src="js/app.min.js?v=3d9b95b01e"></script>
 </body>
 </html>
