@@ -1,0 +1,50 @@
+Bug 20 — FPS con niebla y en la Sentencia de Arceus (base jpter/main 5c97df2)
+==========================================================================
+Entorno: Playwright + Chromium headless, viewport 844x390, deviceScaleFactor 3
+(el juego limita dpr a 1,5 -> lienzo 1266x585), lienzo 2D por software
+(--disable-accelerated-2d-canvas, como un móvil modesto), CDP
+Emulation.setCPUThrottlingRate 4 y 6. Escena controlada: invitado, Pikachu,
+invencible, sin enemigos ni objetos (se borran cada 50 ms) para que sólo cambie
+lo que se mide; Sentencia con debugNoBosses.
+"ms/fotograma" = tiempo de cada callback de requestAnimationFrame + un
+getImageData(0,0,1,1) que obliga a pintar de verdad (si no, Chrome difiere el
+pintado y no se ve). 8 s por medida; 2 repeticiones cada una.
+
+                         ANTES                      DESPUÉS
+                         fps   ms media / p95       fps   ms media / p95
+x4  sin niebla           54.6  15.05 / 22.4         59.0  10.90 / 17.3
+                         55.2  14.47 / 22.0         59.3  10.35 / 16.4
+x4  NIEBLA               36.3  23.31 / 35.8         57.2  12.49 / 19.8
+                         38.6  22.06 / 31.1         59.4  11.18 / 17.2
+x4  Sentencia (pelea)    26.6  33.26 / 47.7         51.0  16.72 / 22.3   (*)
+                         28.0  32.24 / 44.7         49.9  17.13 / 24.2
+x6  sin niebla           34.4  24.45 / 37.2         52.6  13.51 / 23.0
+                         36.3  22.93 / 32.4         53.3  13.51 / 21.7
+x6  NIEBLA               28.7  30.35 / 45.5         49.8  15.79 / 25.2
+                         25.3  34.22 / 48.3         50.8  15.48 / 22.9
+x6  Sentencia (pelea)    16.4  54.48 / 85.4         26.3  32.85 / 46.9   (*)
+                         17.4  51.38 / 69.9         26.9  31.93 / 43.1
+x1  NIEBLA               60    5.05 / 6.8           58.7  2.14 / 3.0
+x1  Sentencia            60.1  7.12 / 9.5           60    3.75 / 5.5
+x4  NIEBLA, lienzo GPU   36.5  24.01 / 30.3         59.6  10.11 / 14.7
+(*) primera fila con la versión final de la rueda (opacidad dentro del sprite).
+
+Coste de la niebla (x4, software): antes +7,9 ms/fotograma sobre la escena sin
+niebla; después +1,2 ms.
+
+Microprueba (x1, mismo lienzo 1266x585):
+  viñeta + tinte + niebla   antes 2,9-3,2 ms/fotograma   después 0,23-0,29 ms
+  rueda de Arceus (pelea)   antes 1,18 ms/dibujo         después 0,56 ms
+  rueda (animación, R=94)   antes 2,03 ms/dibujo         después 1,02 ms
+
+¿Se ve igual? (diferencia píxel a píxel, canal 0-255, sobre un fondo de cuadros)
+  viñeta+tinte+niebla, niebla 100 %   máx 3, media 0,52, píxeles con >3: 0 %
+  viñeta+tinte+niebla, niebla 50 %    máx 3, media 0,57, píxeles con >3: 0 %
+  velo rojizo de la Sentencia         máx 2, media 0,42, píxeles con >3: 0 %
+  rueda de Arceus (pelea)             media 0,09, píxeles con >3: 0,5 % (bordes
+                                      antialias de las joyas al girar; máx 43)
+  rueda (animación)                   media 0,17, píxeles con >3: 0,7 %
+
+Nota: la primera idea (pintar los velos en un lienzo a 1/4 y escalarlo) se
+probó y en el pintado por software era MÁS lenta (escalar con suavizado cuesta
+más que el degradado). Por eso se usa una copia 1:1 del tamaño real del lienzo.

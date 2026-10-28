@@ -1,0 +1,122 @@
+### Bug 4 - simulación de sala (2 G.Social sobre una Realtime Database falsa en memoria)
+
+### ANTES (base jpter/main 5c97df2)
+# sala vista por el anfitrión ANTES del cambio: [{"uid":"ana","dex":25,"shiny":false},{"uid":"bea","dex":25,"shiny":false}]
+# escritura en RTDB: ["update","rooms/ana/m/bea",{"dex":6,"shiny":true}] = 22 bytes de datos
+# sala vista por el anfitrión DESPUÉS del cambio: [{"uid":"ana","dex":25,"shiny":false},{"uid":"bea","dex":6,"shiny":true}]
+not ok 1 - el invitado cambia de compañero: el anfitrión lo ve y la partida lo usa
+  error: |-
+ok 2 - fuera de sala refreshMember no escribe nada
+not ok 3 - menu.js llama a refreshMember justo tras guardar el compañero (Pokédex y normal/shiny)
+  error: |-
+# pass 1
+# fail 2
+
+### DESPUÉS (con el arreglo)
+# sala vista por el anfitrión ANTES del cambio: [{"uid":"ana","dex":25,"shiny":false},{"uid":"bea","dex":25,"shiny":false}]
+# escritura en RTDB: ["update","rooms/ana/m/bea",{"dex":6,"shiny":true}] = 22 bytes de datos
+# sala vista por el anfitrión DESPUÉS del cambio: [{"uid":"ana","dex":25,"shiny":false},{"uid":"bea","dex":6,"shiny":true}]
+ok 1 - el invitado cambia de compañero: el anfitrión lo ve y la partida lo usa
+ok 2 - fuera de sala refreshMember no escribe nada
+ok 3 - menu.js llama a refreshMember justo tras guardar el compañero (Pokédex y normal/shiny)
+# pass 3
+# fail 0
+
+### Tests del repo (después)
+== tests/buffs.test.cjs  # pass 3  # fail 0
+== tests/db.test.cjs  # pass 7  # fail 0
+== tests/i18n.test.cjs  # pass 18  # fail 0
+== tests/net.test.cjs  # pass 28  # fail 0
+== tests/ranking.test.cjs  # pass 8  # fail 0
+== tests/runui.test.cjs  # pass 3  # fail 0
+== tests/spawn.test.cjs  # pass 1  # fail 0
+== tests/touch.test.cjs  # pass 2  # fail 0
+
+### Script de la simulación
+// Bug 4: dos G.Social (anfitrión e invitado) sobre una Realtime Database falsa en memoria.
+// Uso: node room-refresh.test.cjs <ruta del repo>
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs'), path = require('node:path');
+const REPO = process.argv[2];
+const src = f => fs.readFileSync(path.join(REPO, f), 'utf8');
+
+function fakeRtdb() {
+  const data = {}, subs = [], writes = [];
+  const parts = p => p.split('/').filter(Boolean);
+  const get = p => parts(p).reduce((o, k) => (o == null ? undefined : o[k]), data);
+  const put = (p, v) => {
+    const ks = parts(p); let o = data;
+    for (const k of ks.slice(0, -1)) o = o[k] = o[k] || {};
+    if (v === null) delete o[ks.at(-1)]; else o[ks.at(-1)] = JSON.parse(JSON.stringify(v));
+  };
+  const snap = p => { const v = get(p); return { val: () => (v === undefined ? null : JSON.parse(JSON.stringify(v))), numChildren: () => Object.keys(v || {}).length, exists: () => v !== undefined }; };
+  const fire = () => { for (const s of subs) s.cb(snap(s.p)); };
+  const ref = p => ({
+    set: async v => { writes.push(['set', p, v]); put(p, v); fire(); },
+    update: async v => { writes.push(['update', p, v]); for (const k in v) put(p + '/' + k, v[k]); fire(); },
+    remove: async () => { writes.push(['remove', p]); put(p, null); fire(); },
+    get: async () => snap(p),
+    on: (ev, cb) => { subs.push({ p, cb }); cb(snap(p)); },
+    off() {}, onDisconnect: () => ({ remove() {}, cancel() {} })
+  });
+  return { data, writes, rtdb: () => ({ ref, goOnline() {}, goOffline() {} }) };
+}
+
+function social(db, uid, partner, shiny) {
+  const G = {};
+  const save = { partner, partnerShiny: shiny, owned: { 25: 1, 6: 1 }, shiny: { 6: 1 }, name: uid };
+  G.DB = { online: true, fb: { uid, rtdb: db.rtdb(), fs: {} }, user: uid, save, ownsShiny: d => !!save.shiny[d], setName() {}, onLeave() {} };
+  const ls = { ['ps.nick.' + uid]: uid };
+  new Function('G', 'localStorage', 'fetch', 'firebase', src('js/net/social.js'))(G,
+    { getItem: k => ls[k] ?? null, setItem: (k, v) => { ls[k] = v; } }, () => Promise.reject(new Error('x')),
+    { database: { ServerValue: { TIMESTAMP: 1 } }, firestore: { FieldValue: { serverTimestamp: () => 1 } } });
+  return G;
+}
+
+// Lo que hace el anfitrión al pulsar «Empezar» (social-ui.js start()).
+const startCfg = G => G.Social.room.members.map(m => ({ uid: m.uid, dex: m.dex, shiny: !!m.shiny }));
+
+test('el invitado cambia de compañero: el anfitrión lo ve y la partida lo usa', async () => {
+  const db = fakeRtdb();
+  const host = social(db, 'ana', 25, false), guest = social(db, 'bea', 25, false);
+  await host.Social.start(); await guest.Social.start();
+  await host.Social.createRoom();
+  assert.ok((await guest.Social.joinRoom('ana')).ok);
+  assert.deepEqual(startCfg(host).find(m => m.uid === 'bea'), { uid: 'bea', dex: 25, shiny: false });
+  console.log('# sala vista por el anfitrión ANTES del cambio:', JSON.stringify(startCfg(host)));
+
+  // menu.js dex-pick: s.partner = dex; s.partnerShiny = ...; G.DB.commit(); G.Social.refreshMember();
+  guest.DB.save.partner = 6; guest.DB.save.partnerShiny = true;
+  const before = db.writes.length;
+  guest.Social.refreshMember();
+  await new Promise(r => setImmediate(r));
+  assert.equal(db.writes.length - before, 1, 'una sola escritura');
+  console.log('# escritura en RTDB:', JSON.stringify(db.writes.at(-1)), '=', Buffer.byteLength(JSON.stringify(db.writes.at(-1)[2])), 'bytes de datos');
+  assert.deepEqual(db.writes.at(-1), ['update', 'rooms/ana/m/bea', { dex: 6, shiny: true }]);
+  assert.deepEqual(startCfg(host).find(m => m.uid === 'bea'), { uid: 'bea', dex: 6, shiny: true }, 'el anfitrión ya lo tiene');
+  console.log('# sala vista por el anfitrión DESPUÉS del cambio:', JSON.stringify(startCfg(host)));
+
+  // Sin cambios (p. ej. abrir otra vez la sala): no se escribe nada.
+  guest.Social.refreshMember();
+  assert.equal(db.writes.length - before, 1, 'sin cambios no se escribe');
+
+  // Menú principal: shiny -> normal.
+  guest.DB.save.partnerShiny = false;
+  guest.Social.refreshMember();
+  assert.deepEqual(db.writes.at(-1), ['update', 'rooms/ana/m/bea', { dex: 6, shiny: false }]);
+  assert.equal(startCfg(host).find(m => m.uid === 'bea').shiny, false);
+});
+
+test('fuera de sala refreshMember no escribe nada', async () => {
+  const db = fakeRtdb();
+  const solo = social(db, 'cai', 25, false); await solo.Social.start();
+  solo.DB.save.partner = 6; solo.Social.refreshMember();
+  assert.equal(db.writes.length, 0);
+});
+
+test('menu.js llama a refreshMember justo tras guardar el compañero (Pokédex y normal/shiny)', () => {
+  const m = src('js/ui/menu.js');
+  assert.match(m, /s\.partnerShiny = b\.dataset\.v === '1';\s*G\.DB\.commit\(\);\s*G\.Social\.refreshMember\(\);/);
+  assert.match(m, /s\.partnerShiny = hasSh && viewShiny;\s*G\.DB\.commit\(\);\s*G\.Social\.refreshMember\(\);/);
+});

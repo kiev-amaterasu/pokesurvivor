@@ -1,0 +1,42 @@
+Bug 19 — sonido saturado en móvil (base jpter/main 5c97df2)
+==========================================================
+Ya estaba en la base (no se repite): el planificador salta las notas atrasadas
+(audio.js ~425) y el audio se suspende con la pestaña oculta (~71).
+Medido en el tirón: bloquear el hilo 1 s con la música sonando no satura ni
+antes ni después en esta base (pico 0,29-0,55, 0 % recortado).
+
+Lo que se arregla aquí: limitador final, ganancias y tope de voces.
+
+Entorno: Playwright + Chromium headless, móvil 844x390 dsf 3 con táctil
+(pointer: coarse -> tope de voces del móvil). Se mide la SALIDA FINAL (un
+AnalyserNode enganchado al nodo que va a los altavoces), 4 s por prueba:
+  musica  = sólo la música del bosque
+  combate = cada 16 ms: 3 disparos, golpe, exp, moneda, debilitado, rotura,
+            hierba; cada 0,5 s uno "importante" (subir nivel, jefe, curar...)
+  tiron   = música + el hilo bloqueado 1 s
+"recortado" = muestras con |x| >= 1 (lo que el altavoz recorta: la saturación).
+"fuentes" = osciladores/ruidos sonando a la vez (máximo) y creados en total.
+
+Volumen por defecto (música 0,55, efectos 0,7):
+               pico   RMS dB  recortado  fuentes máx / creadas
+ antes musica  0.300  -23.4   0 %        34 / 106
+ desp. musica  0.317  -23.0   0 %        34 / 103
+ antes combate 0.955  -18.3   0 %        60 / 664
+ desp. combate 0.737  -20.0   0 %        50 / 427
+ antes tiron   0.291  -24.7   0 %        28 / 57
+ desp. tiron   0.307  -24.9   0 %        28 / 50
+
+Volumen al máximo (música 1, efectos 1):
+ antes musica  0.531  -18.4   0 %        34 / 103
+ desp. musica  0.564  -17.9   0 %        34 / 103
+ antes combate 1.269  -14.6   0.036 %    61 / 669   <- satura
+ desp. combate 0.941  -15.2   0 %        51 / 433
+ antes tiron   0.518  -20.2   0 %        28 / 50
+ desp. tiron   0.546  -19.9   0 %        28 / 50
+
+Resumen: con mucho combate la salida ya no pasa de 1 (antes, pico 1,27 y
+recortes); la música suena igual (+0,4 dB) y el combate 0,6-1,7 dB más bajo
+(menos voces a la vez en el móvil y efectos ×2,2 en vez de ×2,4).
+Ajuste probado: con efectos ×2,0 el combate quedaba -2,4 dB (demasiado flojo);
+el limitador de Chrome añade ganancia de compensación (+1,7 dB en la música
+con salida 0,9), por eso la salida baja a 0,78.
